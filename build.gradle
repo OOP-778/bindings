@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+    id 'application'
+    id "com.ryandens.javaagent-test" version "0.4.2"
+    id "io.github.reyerizo.gradle.jcstress" version "0.8.15"
+    id "me.champeau.jmh" version "0.7.1"
+}
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jcstress {
+    verbose = "true"
+}
+
+jmh {
+    profilers = ["async:output=flamegraph"]
+    synchronizeIterations = false
+}
+
+dependencies {
+    testImplementation(fileTree("lib"))
+    testJavaagent(fileTree("javaagent"))
+    jmhImplementation(fileTree("lib"))
+
+    // lombok
+    compileOnly("org.projectlombok:lombok:1.18.20")
+    annotationProcessor("org.projectlombok:lombok:1.18.20")
+
+    //junit-jupiter-engine
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.2")
+    testImplementation("io.vavr:vavr:0.10.3")
+    testCompileOnly("org.projectlombok:lombok:1.18.20")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
+}
+
+tasks.withType(JavaForkOptions).configureEach {
+    jvmArgs += [
+            '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.util.concurrent.atomic=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.util.concurrent=ALL-UNNAMED',
+    ]
+}
