@@ -18,7 +18,7 @@ public class StackCollector {
             }
 
             result.add(stackTraceElementString);
-            if (result.size() == BindingsOptions.STACK_SIZE_LIMIT) {
+            if (result.size() == BindingsOptions.TRACING_STACK_SIZE_LIMIT) {
                 break;
             }
         }

@@ -10,9 +10,15 @@ This library gives you the flexibility for managing lifecycle of your objects, y
 You can pull the project, and run the `src/test/oop778/binding/test/TestLive.java` after successful run you should see `dump.html` in the 
 project directory. You can open it in any browser.
 
-# Dump Result by running `TestLive` file
+## Dump Result by running `TestLive` file
 ![Graph](img/graph_example.png)
 
 If you want to see information about specific node, you can just click on it and it'll show you the class name of the Bindable and stack 
 trace where it was created.
 ![Popup](img/popup.png)
+
+## Configuring
+You can configure the library by passing system properties programmatically or by passing them as JVM arguments.
+There's two options so far to configure:
+- `BindingsTracing (default: false)` - This will enable or disable tracing creation Bindable instances
+- `BindingsTracingStackSizeLimit (default: 5)` - This will limit how much of stacktrace is collected
