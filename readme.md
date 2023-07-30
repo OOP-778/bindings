@@ -28,14 +28,18 @@ There's two options so far to configure:
 // Create a new Bindable instance
 Bindable.create(Runnable); // will create a new Bindable instance and will call your runnable once closed
 
-// Implementing Bindable interface
+// Implementing Bindable
 class MyClass implements Bindable {
     @Override
     public void close() {
         Bindable.super.close(); // This call must be done, otherwise you'll get a memory leak
-        // Your code here
+        // Your code here (if you do not need to have own logic here, just don't override it)
     }
 }
+
+// Implementing TypedBindable
+class MyClass2 implements TypedBindable<MyClass2> {}
+new MyClass2().bindTo(something); // will return instance of MyClass2    
 
 // Binding one to another
 Bindable bindableA = Bindable.create(() -> System.out.println("A"));
