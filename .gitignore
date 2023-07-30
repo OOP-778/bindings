@@ -1,10 +1,9 @@
 ### IntelliJ IDEA ###
 .idea/
-out/
+**/out/
 *.iml
-!**/src/main/**/out/
-!**/src/test/**/out/
 
 ### Gradle ###
-.gradle/
-build/
+**/.gradle/
+**/build/
+buildSrc/**

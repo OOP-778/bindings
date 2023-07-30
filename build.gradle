@@ -1,10 +1,16 @@
+import dev.oop778.gradle.common.CommonPlugin
+
 plugins {
     id 'java'
     id 'application'
     id "com.ryandens.javaagent-test" version "0.4.2"
     id "io.github.reyerizo.gradle.jcstress" version "0.8.15"
     id "me.champeau.jmh" version "0.7.1"
+    id 'signing'
+    id 'maven-publish'
 }
+
+apply plugin: CommonPlugin
 
 repositories {
     mavenCentral()
@@ -23,10 +29,15 @@ jmh {
     synchronizeIterations = false
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 dependencies {
-    testImplementation(fileTree("lib"))
+    testImplementation(fileTree("javaagent"))
     testJavaagent(fileTree("javaagent"))
-    jmhImplementation(fileTree("lib"))
+    jmhImplementation(fileTree("javaagent"))
 
     // lombok
     compileOnly("org.projectlombok:lombok:1.18.20")
@@ -47,3 +58,8 @@ tasks.withType(JavaForkOptions).configureEach {
             '--add-opens', 'java.base/java.util.concurrent=ALL-UNNAMED',
     ]
 }
+
+common {
+    createPublicationFrom(components.java, project.name)
+}
+
