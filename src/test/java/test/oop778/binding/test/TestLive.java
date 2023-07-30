@@ -1,6 +1,8 @@
 package test.oop778.binding.test;
 
+import dev.oop778.bindings.Bindings;
 import dev.oop778.bindings.type.Bindable;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -12,7 +14,7 @@ public class TestLive {
     private final CountDownLatch latch;
 
     private static final int NUMBER_OF_BINDABLES = 100;
-    private static final int NUMBER_OF_ITERATIONS = 50;
+    private static final int NUMBER_OF_ITERATIONS = 20;
     private static final int THREADS = 10;
 
     private TestLive() {
@@ -40,28 +42,25 @@ public class TestLive {
     }
 
     private void tick(int thread) {
-        final int amountToAdd = ThreadLocalRandom.current().nextInt(0, NUMBER_OF_BINDABLES);
-        for (int i = 0; i < amountToAdd; i++) {
-            this.bindables.add(Bindable.create());
-        }
-
-        if (!this.bindables.isEmpty()) {
-            final int amountToBind = ThreadLocalRandom.current().nextInt(0, NUMBER_OF_BINDABLES);
-            for (int i = 0; i < amountToBind; i++) {
-                final Bindable bindable = this.bindables.get(ThreadLocalRandom.current().nextInt(0, this.bindables.size()));
-                final Bindable bindable1 = this.bindables.get(ThreadLocalRandom.current().nextInt(0, this.bindables.size()));
-                if (bindable1 == bindable) {
-                    continue;
-                }
-
-                bindable.bindTo(bindable1);
+        for (int i = 0; i < NUMBER_OF_BINDABLES; i++) {
+            // Add new bindable
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                this.bindables.add(Bindable.create());
             }
 
-            final int amountToClose = ThreadLocalRandom.current().nextInt(0, NUMBER_OF_BINDABLES);
-            for (int i = 0; i < amountToClose; i++) {
-                final Bindable bindable = this.bindables.get(ThreadLocalRandom.current().nextInt(0, this.bindables.size()));
-                bindable.close();
-                this.bindables.remove(bindable);
+            // Bind to random bindable
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                final Bindable what = this.bindables.get(ThreadLocalRandom.current().nextInt(this.bindables.size() - 1));
+                final Bindable to = this.bindables.get(ThreadLocalRandom.current().nextInt(this.bindables.size() - 1));
+                if (to != what) {
+                    what.bindTo(to);
+                }
+            }
+
+            // Close random bindable
+            if (ThreadLocalRandom.current().nextBoolean()) {
+                final Bindable what = this.bindables.get(ThreadLocalRandom.current().nextInt(this.bindables.size() - 1));
+                what.close();
             }
         }
     }
@@ -75,6 +74,6 @@ public class TestLive {
         final TestLive testLive = new TestLive();
         testLive.latch.await();
 
-        //Bindings.getInstance().dumpToFile(.toFile());
+        Bindings.getInstance().dumpToFile(Paths.get(System.getProperty("user.dir")).resolve("dump.html").toFile());
     }
 }

@@ -50,14 +50,14 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
 }
 
-tasks.withType(JavaForkOptions).configureEach {
-    jvmArgs += [
-            '--add-opens', 'java.base/java.util=ALL-UNNAMED',
-            '--add-opens', 'java.base/java.util.concurrent.atomic=ALL-UNNAMED',
-            '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-            '--add-opens', 'java.base/java.util.concurrent=ALL-UNNAMED',
-    ]
-}
+//tasks.withType(JavaForkOptions).configureEach {
+//    jvmArgs += [
+//            '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+//            '--add-opens', 'java.base/java.util.concurrent.atomic=ALL-UNNAMED',
+//            '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+//            '--add-opens', 'java.base/java.util.concurrent=ALL-UNNAMED',
+//    ]
+//}
 
 common {
     createPublicationFrom(components.java, project.name)
