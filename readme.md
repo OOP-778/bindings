@@ -22,3 +22,26 @@ You can configure the library by passing system properties programmatically or b
 There's two options so far to configure:
 - `BindingsTracing (default: false)` - This will enable or disable tracing creation Bindable instances
 - `BindingsTracingStackSizeLimit (default: 5)` - This will limit how much of stacktrace is collected
+
+## Usage
+```java
+// Create a new Bindable instance
+Bindable.create(Runnable) - will create a new Bindable instance and will call your runnable once closed
+
+// Implementing Bindable interface
+class MyClass implements Bindable {
+    @Override
+    public void close() {
+        Bindable.super.close(); // This call must be done, otherwise you'll get a memory leak
+        // Your code here
+    }
+}
+
+// Binding one to another
+Bindable bindableA = Bindable.create(() -> System.out.println("A"));
+Bindable bindableB = Bindable.create(() -> System.out.println("B"));
+
+bindableB.bindTo(bindableA);
+bindableA.close(); // Will close both A and B
+
+```
