@@ -26,7 +26,7 @@ There's two options so far to configure:
 ## Usage
 ```java
 // Create a new Bindable instance
-Bindable.create(Runnable) - will create a new Bindable instance and will call your runnable once closed
+Bindable.create(Runnable); // will create a new Bindable instance and will call your runnable once closed
 
 // Implementing Bindable interface
 class MyClass implements Bindable {
@@ -44,4 +44,16 @@ Bindable bindableB = Bindable.create(() -> System.out.println("B"));
 bindableB.bindTo(bindableA);
 bindableA.close(); // Will close both A and B
 
+// Making sure your bindable closes last
+Bindable bindableA = Bindable.create(() -> System.out.println("A"));
+Bindable bindableB = Bindable.create(() -> System.out.println("B"));
+Bindable bindableC = Bindable.create(() -> System.out.println("C"));
+
+bindableB.bindTo(bindableA, BindingOrder.LAST);
+bindableC.bindTo(bindableA)
+
+bindableA.close() // Will produce B, C, A
+
+// Usage of dumping
+Bindings.dumpToFile("dump.html"); // Will dump all unclosed bindable instances to the file
 ```
