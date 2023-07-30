@@ -2,6 +2,7 @@ package dev.oop778.bindings;
 
 import dev.oop778.bindings.type.Bindable;
 import dev.oop778.bindings.util.JsonUtility;
+import dev.oop778.bindings.util.Pair;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,14 +12,17 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -99,6 +103,7 @@ public class Bindings {
                 throw new IllegalStateException("Template not found");
             }
 
+            // Write template
             try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8));
                 String line;
@@ -118,7 +123,6 @@ public class Bindings {
 
     public Collection<DumpEntry> dump() {
         final AtomicInteger idCounter = new AtomicInteger(0);
-
         final Map<Integer, DumpEntry> byId = new HashMap<>();
 
         for (final BindableNode node : this.bindableNodesByHash.values()) {
@@ -156,7 +160,7 @@ public class Bindings {
         return byId.values()
             .stream()
             .sorted(Comparator.comparingInt(a -> a.id))
-            .toList();
+            .collect(Collectors.toList());
     }
 
     private String toJson(Collection<DumpEntry> collection) {
@@ -171,13 +175,14 @@ public class Bindings {
         private final List<Integer> bindedTo;
         private final List<String> stack;
 
+
         @Override
         public String toJson() {
             return JsonUtility.write(
-                Map.entry("id", this.id),
-                Map.entry("name", this.name),
-                Map.entry("bindedTo", this.bindedTo),
-                Map.entry("stack", this.stack == null ? List.of("No Stack") : this.stack)
+                Pair.create("id", this.id),
+                Pair.create("name", this.name),
+                Pair.create("bindedTo", this.bindedTo),
+                Pair.create("stack", this.stack == null ? Collections.singletonList("No Stack") : this.stack)
             );
         }
     }

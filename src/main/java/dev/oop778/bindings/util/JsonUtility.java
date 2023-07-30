@@ -10,15 +10,15 @@ public class JsonUtility {
         String toJson();
     }
 
-    public static String write(Map.Entry<String, Object> ...entries) {
+    public static String write(Pair<String, Object> ...entries) {
         final StringBuilder builder = new StringBuilder();
         builder.append("{");
         boolean first = true;
-        for (final Map.Entry<String, Object> entry : entries) {
+        for (final Pair<String, Object> entry : entries) {
             if (!first) {
                 builder.append(",");
             }
-            builder.append("\"").append(entry.getKey()).append("\":").append(writeObject(entry.getValue()));
+            builder.append("\"").append(entry.getFirst()).append("\":").append(writeObject(entry.getSecond()));
             first = false;
         }
         builder.append("}");

@@ -13,7 +13,7 @@ public class StackCollector {
 
         for (final StackTraceElement stackTraceElement : stackTrace) {
             final String stackTraceElementString = stackTraceElement.toString();
-            if (stackTraceElementString.contains(Bindings.class.getPackageName())) {
+            if (stackTraceElementString.contains(Bindings.class.getPackage().getName())) {
                 continue;
             }
 
