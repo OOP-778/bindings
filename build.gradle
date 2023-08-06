@@ -1,10 +1,10 @@
 import dev.oop778.gradle.common.CommonPlugin
 
 plugins {
-    id 'java'
-    id 'application'
+    id 'java-library'
     id "com.ryandens.javaagent-test" version "0.4.2"
     id "io.github.reyerizo.gradle.jcstress" version "0.8.15"
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id "me.champeau.jmh" version "0.7.1"
     id 'signing'
     id 'maven-publish'
@@ -45,7 +45,6 @@ dependencies {
 
     //junit-jupiter-engine
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.2")
-    testImplementation("io.vavr:vavr:0.10.3")
     testCompileOnly("org.projectlombok:lombok:1.18.20")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
 }
@@ -58,6 +57,10 @@ dependencies {
 //            '--add-opens', 'java.base/java.util.concurrent=ALL-UNNAMED',
 //    ]
 //}
+
+shadowJar {
+    relocate("dev.oop778.bindings", "com.emerald.system.binding")
+}
 
 common {
     createPublicationFrom(components.java, project.name)
