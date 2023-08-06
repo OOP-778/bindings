@@ -1,7 +1,7 @@
 package dev.oop778.bindings.type;
 
-import dev.oop778.bindings.BindingOrder;
 import dev.oop778.bindings.Bindings;
+import dev.oop778.bindings.enums.BindingOrder;
 
 public interface Bindable {
 
@@ -42,5 +42,33 @@ public interface Bindable {
         return this;
     }
 
-    enum Flag {}
+    default Bindable unbindFrom(Bindable from) {
+        Bindings.getInstance().unbind(this, from);
+        return this;
+    }
+
+    interface NonBindable extends Bindable {
+        static NonBindable create() {
+            return new NonBindable() {};
+        }
+
+        @Override
+        default void close() {
+        }
+
+        @Override
+        default Bindable bindTo(Bindable to) {
+            return this;
+        }
+
+        @Override
+        default Bindable bindTo(Bindable to, BindingOrder order) {
+            return this;
+        }
+
+        @Override
+        default Bindable unbindFrom(Bindable from) {
+            return this;
+        }
+    }
 }
