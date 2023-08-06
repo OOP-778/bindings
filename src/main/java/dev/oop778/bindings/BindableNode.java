@@ -19,6 +19,7 @@ public class BindableNode {
     private final Map<Integer, BindEntry> bindEntriesByHash;
     private final AtomicBoolean closed;
     private final List<String> createStack;
+    private final long createdAtMs;
 
     public BindableNode(Bindable bindable) {
         this.bindable = bindable;
@@ -32,6 +33,7 @@ public class BindableNode {
         this.bindEntriesByHash = new ConcurrentHashMap<>();
         this.closed = new AtomicBoolean(false);
         this.createStack = BindingsOptions.ENABLE_TRACING ? StackCollector.collectStack() : null;
+        this.createdAtMs = BindingsOptions.TRACING_TIME_STAMP ? System.currentTimeMillis() : -1;
     }
 
     public boolean addConnection(BindableNode node, BindingOrder order, Direction direction) {

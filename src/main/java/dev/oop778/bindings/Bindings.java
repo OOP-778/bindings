@@ -3,6 +3,7 @@ package dev.oop778.bindings;
 import dev.oop778.bindings.enums.BindingOrder;
 import dev.oop778.bindings.type.Bindable;
 import dev.oop778.bindings.util.JsonUtility;
+import dev.oop778.bindings.util.ObjectTypeUtility;
 import dev.oop778.bindings.util.Pair;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -146,15 +147,13 @@ public class Bindings {
         for (final BindableNode node : this.bindableNodesByHash.values()) {
             final DumpEntry dumpEntry = byId.computeIfAbsent(
                 System.identityHashCode(node.getBindable()),
-                ($) -> {
-                    final DumpEntry newDumpEntry = new DumpEntry(
-                        idCounter.incrementAndGet(),
-                        String.format("%s (%s)", node.getBindable().getClass().getSimpleName(), System.identityHashCode(node.getBindable())),
-                        new ArrayList<>(),
-                        node.getCreateStack()
-                    );
-                    return newDumpEntry;
-                }
+                ($) -> new DumpEntry(
+                    idCounter.incrementAndGet(),
+                    String.format("%s (%s)", ObjectTypeUtility.get(node.getBindable()), System.identityHashCode(node.getBindable())),
+                    new ArrayList<>(),
+                    node.getCreateStack(),
+                    node.getCreatedAtMs()
+                )
             );
 
             for (final BindableNode.BindEntry bindEntry : node.getBindEntriesByHash().values()) {
@@ -166,9 +165,10 @@ public class Bindings {
                         System.identityHashCode(bindEntry.getNode().getBindable()),
                         ($) -> new DumpEntry(
                             idCounter.incrementAndGet(),
-                            String.format("%s (%s)", bindEntry.getNode().getBindable().getClass().getSimpleName(), System.identityHashCode(bindEntry.getNode())),
+                            String.format("%s (%s)", ObjectTypeUtility.get(bindEntry.getNode().getBindable()), System.identityHashCode(bindEntry.getNode())),
                             new ArrayList<>(),
-                            bindEntry.getNode().getCreateStack()
+                            bindEntry.getNode().getCreateStack(),
+                            bindEntry.getNode().getCreatedAtMs()
                         )
                     ).id
                 );
@@ -192,15 +192,16 @@ public class Bindings {
         private final String name;
         private final List<Integer> bindedTo;
         private final List<String> stack;
-
+        private final long createdMs;
 
         @Override
         public String toJson() {
             return JsonUtility.write(
                 Pair.create("id", this.id),
                 Pair.create("name", this.name),
-                Pair.create("bindedTo", this.bindedTo),
-                Pair.create("stack", this.stack == null ? Collections.singletonList("No Stack") : this.stack)
+                Pair.create("binded_to", this.bindedTo),
+                Pair.create("stack", this.stack == null ? Collections.singletonList("No Stack") : this.stack),
+                Pair.create("live_time_ms", System.currentTimeMillis() - this.createdMs)
             );
         }
     }
