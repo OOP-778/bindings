@@ -1,5 +1,6 @@
 package dev.oop778.bindings;
 
+import dev.oop778.bindings.enums.BindingOrder;
 import dev.oop778.bindings.stack.StackCollector;
 import dev.oop778.bindings.type.Bindable;
 import java.util.Comparator;
@@ -33,19 +34,29 @@ public class BindableNode {
         this.createStack = BindingsOptions.ENABLE_TRACING ? StackCollector.collectStack() : null;
     }
 
-    public void addConnection(BindableNode node, BindingOrder order, Direction direction) {
+    public boolean addConnection(BindableNode node, BindingOrder order, Direction direction) {
+        final BindEntry bindEntry = this.bindEntriesByHash.get(System.identityHashCode(node.bindable));
+        if (bindEntry != null) {
+            if (bindEntry.getDirection() != direction) {
+                throw new IllegalStateException(String.format("Circular binding detected between %s and %s", this.bindable, node.bindable));
+            }
+
+            return false;
+        }
+
         final BindEntry entry = new BindEntry(order, direction, node);
-        this.bindEntriesByHash.put(System.identityHashCode(entry.bindable.bindable), entry);
+        this.bindEntriesByHash.put(System.identityHashCode(entry.node.bindable), entry);
         this.bindEntries.add(entry);
+        return true;
     }
 
     public void close() {
         for (final BindEntry bindEntry : this.bindEntries) {
-            bindEntry.bindable.handleClose(this, bindEntry.direction == Direction.FROM);
+            bindEntry.node.handleClose(this, bindEntry.direction == Direction.FROM);
         }
     }
 
-    private void handleClose(BindableNode node, boolean callClose) {
+    public void handleClose(BindableNode node, boolean callClose) {
         final BindEntry remove = this.bindEntriesByHash.remove(System.identityHashCode(node.bindable));
         if (remove != null) {
             this.bindEntries.remove(remove);
@@ -66,7 +77,7 @@ public class BindableNode {
     protected static class BindEntry {
         private final BindingOrder order;
         private final Direction direction;
-        private final BindableNode bindable;
+        private final BindableNode node;
         private final long createdAtNs = System.nanoTime();
     }
 }

@@ -1,5 +1,6 @@
 package dev.oop778.bindings;
 
+import dev.oop778.bindings.enums.BindingOrder;
 import dev.oop778.bindings.type.Bindable;
 import dev.oop778.bindings.util.JsonUtility;
 import dev.oop778.bindings.util.Pair;
@@ -12,7 +13,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -36,11 +37,16 @@ public class Bindings {
     }
 
     public void bind(Bindable what, Bindable to, BindingOrder order) {
+        if (what == to) {
+            throw new IllegalArgumentException("Cannot bind a bindable to itself");
+        }
+
         final BindableNode whatNode = this.getOrCreateNode(what);
         final BindableNode toNode = this.getOrCreateNode(to);
 
-        whatNode.addConnection(toNode, order, BindableNode.Direction.TO);
-        toNode.addConnection(whatNode, order, BindableNode.Direction.FROM);
+        if (whatNode.addConnection(toNode, order, BindableNode.Direction.TO)) {
+            toNode.addConnection(whatNode, order, BindableNode.Direction.FROM);
+        }
     }
 
     private BindableNode getOrCreateNode(Bindable bindable) {
@@ -48,6 +54,17 @@ public class Bindings {
             System.identityHashCode(bindable),
             ($) -> new BindableNode(bindable)
         );
+    }
+
+    public void unbind(Bindable what, Bindable from) {
+        this.findNode(what).ifPresent((whatNode) -> this.findNode(from).ifPresent((fromNode) -> {
+            whatNode.handleClose(fromNode, false);
+            fromNode.handleClose(whatNode, false);
+        }));
+    }
+
+    private Optional<BindableNode> findNode(Bindable bindable) {
+        return Optional.ofNullable(this.bindableNodesByHash.get(System.identityHashCode(bindable)));
     }
 
     public boolean close(Bindable bindable) {
@@ -58,6 +75,7 @@ public class Bindings {
 
         // close the node
         node.close();
+
         return true;
     }
 
@@ -131,7 +149,7 @@ public class Bindings {
                 ($) -> {
                     final DumpEntry newDumpEntry = new DumpEntry(
                         idCounter.incrementAndGet(),
-                        node.getBindable().toString(),
+                        String.format("%s (%s)", node.getBindable().getClass().getSimpleName(), System.identityHashCode(node.getBindable())),
                         new ArrayList<>(),
                         node.getCreateStack()
                     );
@@ -145,12 +163,12 @@ public class Bindings {
                 }
 
                 dumpEntry.bindedTo.add(byId.computeIfAbsent(
-                        System.identityHashCode(bindEntry.getBindable()),
+                        System.identityHashCode(bindEntry.getNode().getBindable()),
                         ($) -> new DumpEntry(
                             idCounter.incrementAndGet(),
-                            bindEntry.getBindable().toString(),
+                            String.format("%s (%s)", bindEntry.getNode().getBindable().getClass().getSimpleName(), System.identityHashCode(bindEntry.getNode())),
                             new ArrayList<>(),
-                            bindEntry.getBindable().getCreateStack()
+                            bindEntry.getNode().getCreateStack()
                         )
                     ).id
                 );

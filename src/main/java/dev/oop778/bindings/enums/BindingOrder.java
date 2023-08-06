@@ -1,4 +1,4 @@
-package dev.oop778.bindings;
+package dev.oop778.bindings.enums;
 
 public enum BindingOrder {
     FIRST,
