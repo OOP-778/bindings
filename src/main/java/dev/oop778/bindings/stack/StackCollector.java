@@ -11,8 +11,8 @@ public class StackCollector {
         final StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         final List<String> result = new ArrayList<>();
 
-        for (final StackTraceElement stackTraceElement : stackTrace) {
-            final String stackTraceElementString = stackTraceElement.toString();
+        for (int i = 2; i < stackTrace.length; i++) {
+            final String stackTraceElementString = stackTrace[i].toString();
             if (stackTraceElementString.contains(Bindings.class.getPackage().getName())) {
                 continue;
             }
