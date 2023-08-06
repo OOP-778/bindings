@@ -7,7 +7,7 @@ import dev.oop778.bindings.Bindings;
 import dev.oop778.bindings.type.Bindable;
 import org.junit.jupiter.api.Test;
 
-class General {
+class GeneralTest {
 
     @Test
     void testChildrenClosingRemovedFromParent() {

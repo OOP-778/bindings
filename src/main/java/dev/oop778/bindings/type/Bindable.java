@@ -1,6 +1,7 @@
 package dev.oop778.bindings.type;
 
 import dev.oop778.bindings.Bindings;
+import dev.oop778.bindings.enums.BindableFlag;
 import dev.oop778.bindings.enums.BindingOrder;
 
 public interface Bindable {
@@ -45,6 +46,15 @@ public interface Bindable {
     default Bindable unbindFrom(Bindable from) {
         Bindings.getInstance().unbind(this, from);
         return this;
+    }
+
+    default Bindable flag(BindableFlag ...flag) {
+        Bindings.getInstance().flag(this, flag);
+        return this;
+    }
+
+    default boolean isClosed() {
+        return Bindings.getInstance().isClosed(this);
     }
 
     interface NonBindable extends Bindable {

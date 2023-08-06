@@ -19,10 +19,10 @@ trace where it was created.
 
 ## Configuring
 You can configure the library by passing system properties programmatically or by passing them as JVM arguments.
-There's two options so far to configure:
+There's following properties to configure:
 - `BindingsTracing (default: false)` - This will enable or disable tracing creation Bindable instances
 - `BindingsTracingStackSizeLimit (default: 5)` - This will limit how much of stacktrace is collected
-
+- `BindingsTracingTimeStamp (default: false)`
 ## Usage
 ```java
 // Create a new Bindable instance
@@ -60,4 +60,29 @@ bindableA.close() // Will produce B, C, A
 
 // Usage of dumping
 Bindings.dumpToFile("dump.html"); // Will dump all unclosed bindable instances to the file
+
+// Usage of AutoBindable
+class MyAutoBindableClass extends AutoBindable {
+    public MyAutoBindableClass() {
+        // Will bind all methods of this class returning bindable to this instance if it's instance of Bindable otherwise 
+        // throw error
+        this.autoBind();
+        this.autoBind(true); // Will bind all methods of this class and hierarchy (interfaces & extending classes) returning bindable to this instance if it's instance of Bindable otherwise 
+        // throw error
+        
+        this.autoBind(Bindable); // Will do what autobind() does but will bind to specified Bindable
+        this.autoBind(Bindable, true); // Will do what autobind(true) does but will bind to specified Bindable
+    }
+    
+    private Bindable listener1() {
+        // Your code here
+    }
+    
+    private Bindable listener2() {
+        // Your code here
+    }
+}
 ```
+
+## Bindings diagram
+![Bindings diagram](img/diagram.png)

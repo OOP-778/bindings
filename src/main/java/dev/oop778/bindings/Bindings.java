@@ -1,5 +1,6 @@
 package dev.oop778.bindings;
 
+import dev.oop778.bindings.enums.BindableFlag;
 import dev.oop778.bindings.enums.BindingOrder;
 import dev.oop778.bindings.type.Bindable;
 import dev.oop778.bindings.util.JsonUtility;
@@ -57,15 +58,23 @@ public class Bindings {
         );
     }
 
+    public void flag(Bindable bindable, BindableFlag[] flag) {
+        this.getOrCreateNode(bindable).flag(flag);
+    }
+
+    public boolean isClosed(Bindable bindable) {
+        return !this.findNode(bindable).isPresent();
+    }
+
+    private Optional<BindableNode> findNode(Bindable bindable) {
+        return Optional.ofNullable(this.bindableNodesByHash.get(System.identityHashCode(bindable)));
+    }
+
     public void unbind(Bindable what, Bindable from) {
         this.findNode(what).ifPresent((whatNode) -> this.findNode(from).ifPresent((fromNode) -> {
             whatNode.handleClose(fromNode, false);
             fromNode.handleClose(whatNode, false);
         }));
-    }
-
-    private Optional<BindableNode> findNode(Bindable bindable) {
-        return Optional.ofNullable(this.bindableNodesByHash.get(System.identityHashCode(bindable)));
     }
 
     public boolean close(Bindable bindable) {

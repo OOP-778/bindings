@@ -1,9 +1,12 @@
 package dev.oop778.bindings;
 
+import dev.oop778.bindings.enums.BindableFlag;
 import dev.oop778.bindings.enums.BindingOrder;
 import dev.oop778.bindings.stack.StackCollector;
 import dev.oop778.bindings.type.Bindable;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +23,7 @@ public class BindableNode {
     private final AtomicBoolean closed;
     private final List<String> createStack;
     private final long createdAtMs;
+    private final EnumSet<BindableFlag> flags;
 
     public BindableNode(Bindable bindable) {
         this.bindable = bindable;
@@ -34,6 +38,7 @@ public class BindableNode {
         this.closed = new AtomicBoolean(false);
         this.createStack = BindingsOptions.ENABLE_TRACING ? StackCollector.collectStack() : null;
         this.createdAtMs = BindingsOptions.TRACING_TIME_STAMP ? System.currentTimeMillis() : -1;
+        this.flags = EnumSet.noneOf(BindableFlag.class);
     }
 
     public boolean addConnection(BindableNode node, BindingOrder order, Direction direction) {
@@ -67,6 +72,14 @@ public class BindableNode {
                 this.bindable.close();
             }
         }
+
+        if (this.flags.contains(BindableFlag.CLOSE_ON_UNBIND) || this.flags.contains(BindableFlag.CLOSE_WHEN_EMPTY) && this.bindEntries.isEmpty()) {
+            this.bindable.close();
+        }
+    }
+
+    public void flag(BindableFlag[] flag) {
+        this.flags.addAll(Arrays.asList(flag));
     }
 
     public enum Direction {
