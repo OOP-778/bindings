@@ -82,7 +82,11 @@ class MyAutoBindableClass extends AutoBindable {
         // Your code here
     }
 }
+
 ```
 
 ## Bindings diagram
 ![Bindings diagram](img/diagram.png)
+
+## Bindable Collections diagram
+![Bindings diagram](img/diagram_collection.png)
