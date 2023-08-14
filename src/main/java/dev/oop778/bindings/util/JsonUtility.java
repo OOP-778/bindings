@@ -1,7 +1,6 @@
 package dev.oop778.bindings.util;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.function.Function;
 
 public class JsonUtility {
@@ -10,15 +9,15 @@ public class JsonUtility {
         String toJson();
     }
 
-    public static String write(Pair<String, Object> ...entries) {
+    public static String write(Entry<String, Object>...entries) {
         final StringBuilder builder = new StringBuilder();
         builder.append("{");
         boolean first = true;
-        for (final Pair<String, Object> entry : entries) {
+        for (final Entry<String, Object> entry : entries) {
             if (!first) {
                 builder.append(",");
             }
-            builder.append("\"").append(entry.getFirst()).append("\":").append(writeObject(entry.getSecond()));
+            builder.append("\"").append(entry.getKey()).append("\":").append(writeObject(entry.getValue()));
             first = false;
         }
         builder.append("}");

@@ -1,11 +1,12 @@
 package dev.oop778.bindings;
 
+import dev.oop778.bindings.collection.BindableCollection;
 import dev.oop778.bindings.enums.BindableFlag;
 import dev.oop778.bindings.enums.BindingOrder;
 import dev.oop778.bindings.type.Bindable;
 import dev.oop778.bindings.util.JsonUtility;
 import dev.oop778.bindings.util.ObjectTypeUtility;
-import dev.oop778.bindings.util.Pair;
+import dev.oop778.bindings.util.Entry;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -206,11 +207,11 @@ public class Bindings {
         @Override
         public String toJson() {
             return JsonUtility.write(
-                Pair.create("id", this.id),
-                Pair.create("name", this.name),
-                Pair.create("binded_to", this.bindedTo),
-                Pair.create("stack", this.stack == null ? Collections.singletonList("No Stack") : this.stack),
-                Pair.create("live_time_ms", System.currentTimeMillis() - this.createdMs)
+                Entry.create("id", this.id),
+                Entry.create("name", this.name),
+                Entry.create("binded_to", this.bindedTo),
+                Entry.create("stack", this.stack == null ? Collections.singletonList("No Stack") : this.stack),
+                Entry.create("live_time_ms", System.currentTimeMillis() - this.createdMs)
             );
         }
     }

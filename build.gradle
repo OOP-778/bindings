@@ -47,6 +47,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.2")
     testCompileOnly("org.projectlombok:lombok:1.18.20")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
+
+    // jsr305
+    api("com.google.code.findbugs:jsr305:3.0.2")
 }
 
 //tasks.withType(JavaForkOptions).configureEach {
