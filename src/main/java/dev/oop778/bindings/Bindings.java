@@ -1,12 +1,11 @@
 package dev.oop778.bindings;
 
-import dev.oop778.bindings.collection.BindableCollection;
 import dev.oop778.bindings.enums.BindableFlag;
 import dev.oop778.bindings.enums.BindingOrder;
 import dev.oop778.bindings.type.Bindable;
+import dev.oop778.bindings.util.Entry;
 import dev.oop778.bindings.util.JsonUtility;
 import dev.oop778.bindings.util.ObjectTypeUtility;
-import dev.oop778.bindings.util.Entry;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,11 +20,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -110,6 +112,22 @@ public class Bindings {
 
     public boolean contains(Bindable parent) {
         return this.bindableNodesByHash.containsKey(System.identityHashCode(parent));
+    }
+
+    public Collection<Bindable> collectBindables(Predicate<Bindable> collectPredicate) {
+        final Set<Bindable> bindables = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (final BindableNode bindableNode : this.bindableNodesByHash.values()) {
+            final Bindable bindable = bindableNode.getBindable();
+            if (collectPredicate.test(bindable)) {
+                bindables.add(bindable);
+            }
+        }
+
+        return bindables;
+    }
+
+    public Collection<Bindable> collectBindablesOf(String packageName) {
+        return collectBindables((bindable) -> bindable.getClass().getPackage().getName().startsWith(packageName));
     }
 
     @SneakyThrows
