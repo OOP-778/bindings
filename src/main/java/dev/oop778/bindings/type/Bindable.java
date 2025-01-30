@@ -5,7 +5,6 @@ import dev.oop778.bindings.enums.BindableFlag;
 import dev.oop778.bindings.enums.BindingOrder;
 
 public interface Bindable {
-
     static Bindable create() {
         return new Bindable() {
             @Override
@@ -13,10 +12,6 @@ public interface Bindable {
                 Bindable.super.close();
             }
         };
-    }
-
-    default void close() {
-        Bindings.getInstance().close(this);
     }
 
     static Bindable create(Runnable runnable) {
@@ -29,13 +24,24 @@ public interface Bindable {
         };
     }
 
+    default void close() {
+        Bindings.getInstance().close(this);
+    }
+
     default boolean isBinded(Bindable to) {
         return Bindings.getInstance().getDirection(this, to) != -1;
     }
 
     default Bindable bindTo(Bindable bindable) {
-        this.bindTo(bindable, BindingOrder.NORMAL);
-        return this;
+        return this.bindTo(bindable, BindingOrder.NORMAL);
+    }
+
+    default boolean statefulBindTo(Bindable bindable) {
+        return this.statefulBindTo(bindable, BindingOrder.NORMAL);
+    }
+
+    default boolean statefulBindTo(Bindable bindable, BindingOrder order) {
+        return Bindings.getInstance().bind(this, bindable, order);
     }
 
     default Bindable bindTo(Bindable bindable, BindingOrder order) {
@@ -48,7 +54,7 @@ public interface Bindable {
         return this;
     }
 
-    default Bindable flag(BindableFlag ...flag) {
+    default Bindable flag(BindableFlag... flag) {
         Bindings.getInstance().flag(this, flag);
         return this;
     }
