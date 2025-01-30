@@ -1,0 +1,48 @@
+name: Publish Gradle Artifacts
+
+on:
+  release:
+    types: [published]
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version to publish'
+        required: true
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set VERSION without "v" prefix
+        id: version
+        run: |
+          # Remove the "v" prefix if it exists
+          VERSION="${{ github.event.inputs.version || github.ref_name }}"
+          echo "VERSION=${VERSION#v}" >> $GITHUB_ENV
+
+      - name: "Build"
+        run: "gradle build"
+
+      - name: Publish artifacts
+        env:
+          GROUP: ${{ secrets.GROUP }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          SIGN_KEY: ${{ secrets.SIGN_KEY }}
+          SIGN_PASSWORD: ${{ secrets.SIGN_PASSWORD }}
+        run: gradle publish
