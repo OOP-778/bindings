@@ -30,7 +30,7 @@ public interface Bindable {
     }
 
     default boolean isBinded(Bindable to) {
-        return Bindings.getInstance().getBindedDirection(this, to) != null;
+        return Bindings.getInstance().getDirection(this, to) != -1;
     }
 
     default Bindable bindTo(Bindable bindable) {
@@ -55,6 +55,16 @@ public interface Bindable {
 
     default boolean isClosed() {
         return Bindings.getInstance().isClosed(this);
+    }
+
+    default String bindableDisplay() {
+        final String simpleName = this.getClass().getSimpleName();
+        if (!simpleName.isEmpty()) {
+            return simpleName;
+        }
+
+        final String[] split = this.getClass().getTypeName().split("\\.");
+        return split[split.length - 1];
     }
 
     interface NonBindable extends Bindable {

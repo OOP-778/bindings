@@ -1,7 +1,7 @@
 package dev.oop778.bindings.autobindable;
 
 import dev.oop778.bindings.type.Bindable;
-import dev.oop778.bindings.type.TypedBindable;
+import dev.oop778.bindings.type.BindableTyped;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
@@ -38,7 +38,7 @@ class AutoBindableHelper {
             result.addAll(AutoBindableHelper.collectMethods(currentClass, visitedMethods));
             if (hierarchy) {
                 for (final Class<?> anInterface : currentClass.getInterfaces()) {
-                    if (Bindable.class == anInterface || TypedBindable.class == anInterface) {
+                    if (Bindable.class == anInterface || BindableTyped.class == anInterface) {
                         continue;
                     }
                     result.addAll(AutoBindableHelper.collectMethods(anInterface, visitedMethods));
