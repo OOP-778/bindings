@@ -3,6 +3,15 @@
 ![Static Badge](https://img.shields.io/badge/java_version-8--latest-brightgreen)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/OOP-778/bindings)
 
+## 0.5 version changelog:
+- The new version has got rid of HTML nodes viewer with in file replacement for easability when working with huge trees
+- The new version has introduced a "once" bindable that cannot be binded to unless alive() is called, this ensures that you can have objects that only once can be created
+- The new version has gotten rid of BindableCollection to maintain the simplicity of the system
+- The new version has improved memory footprint by 74-75%
+- The new version has been tested more in a highly concurrent scenarios
+- The new version has introduced ability to listen for tree changes: node creation, node close & dump, so you can add your own metrics to dump files to help you detect issues faster by default it comes with BindingsStackTracker & BindingsTimeStamp
+- Added bindableDisplay() method in Bindable to allow you to customize how you display your bindable instances in dump
+- Move to java 17
 
 This library gives you the flexibility for managing lifecycle of your objects, you're able to bind objects to another objects, control the order of closing, if there's memory leaks you can find the source of them very quickly using built in dumping tool, which produces a graph of all unclosed bindable instances.
 
@@ -11,18 +20,70 @@ You can pull the project, and run the `src/test/oop778/binding/test/TestLive.jav
 project directory. You can open it in any browser.
 
 ## Dump Result by running `TestLive` file
-![Graph](img/graph_example.png)
+```java
+=== Bindings Dump ===
+Timestamp: Thu Jan 30 08:18:24 EET 2025
 
-If you want to see information about specific node, you can just click on it and it'll show you the class name of the Bindable and stack 
-trace where it was created.
-![Popup](img/popup.png)
+Counts By Class:
+	dev.oop778.bindings.type.Bindable$1: 19589
 
-## Configuring
-You can configure the library by passing system properties programmatically or by passing them as JVM arguments.
-There's following properties to configure:
-- `BindingsTracing (default: false)` - This will enable or disable tracing creation Bindable instances
-- `BindingsTracingStackSizeLimit (default: 5)` - This will limit how much of stacktrace is collected
-- `BindingsTracingTimeStamp (default: false)`
+Node: Bindable$1{10577}
+Created Ago = 2264ms
+Stack = 
+test.oop778.binding.test.TestLive.tick(TestLive.java:76)
+test.oop778.binding.test.TestLive.lambda$new$0(TestLive.java:35)
+java.base/java.lang.Thread.run(Thread.java:840)
+  Edges:
+    -> Bindable$1{5545} [direction=FROM, order=NORMAL, seq=0]
+
+Node: Bindable$1{11339}
+Created Ago = 2524ms
+Stack = 
+test.oop778.binding.test.TestLive.tick(TestLive.java:76)
+test.oop778.binding.test.TestLive.lambda$new$0(TestLive.java:35)
+java.base/java.lang.Thread.run(Thread.java:840)
+  Edges:
+    -> Bindable$1{3089} [direction=FROM, order=NORMAL, seq=0]
+
+Node: Bindable$1{11457}
+Created Ago = 2655ms
+Stack = 
+test.oop778.binding.test.TestLive.tick(TestLive.java:76)
+test.oop778.binding.test.TestLive.lambda$new$0(TestLive.java:35)
+java.base/java.lang.Thread.run(Thread.java:840)
+  Edges:
+    -> Bindable$1{1898} [direction=TO, order=NORMAL, seq=0]
+
+Node: Bindable$1{11665}
+Created Ago = 3545ms
+Stack = 
+test.oop778.binding.test.TestLive.tick(TestLive.java:76)
+test.oop778.binding.test.TestLive.lambda$new$0(TestLive.java:35)
+java.base/java.lang.Thread.run(Thread.java:840)
+  Edges:
+    -> Bindable$1{1318} [direction=TO, order=NORMAL, seq=0]
+    -> Bindable$1{18926} [direction=TO, order=NORMAL, seq=1]
+    -> Bindable$1{2095} [direction=FROM, order=NORMAL, seq=2]
+
+Node: Bindable$1{11666}
+Created Ago = 2903ms
+Stack = 
+test.oop778.binding.test.TestLive.tick(TestLive.java:76)
+test.oop778.binding.test.TestLive.lambda$new$0(TestLive.java:35)
+java.base/java.lang.Thread.run(Thread.java:840)
+  Edges:
+    -> Bindable$1{1318} [direction=TO, order=NORMAL, seq=0]
+
+Node: Bindable$1{11761}
+Created Ago = 1921ms
+Stack = 
+test.oop778.binding.test.TestLive.tick(TestLive.java:76)
+test.oop778.binding.test.TestLive.lambda$new$0(TestLive.java:35)
+java.base/java.lang.Thread.run(Thread.java:840)
+  Edges:
+    -> Bindable$1{11762} [direction=FROM, order=NORMAL, seq=0]
+```
+
 ## Usage
 ```java
 // Create a new Bindable instance
@@ -59,7 +120,7 @@ bindableC.bindTo(bindableA)
 bindableA.close() // Will produce B, C, A
 
 // Usage of dumping
-Bindings.dumpToFile("dump.html"); // Will dump all unclosed bindable instances to the file
+Bindings.getInstance().dumpToFile(Paths.get("dump.html")); // Will dump all unclosed bindable instances to the file
 
 // Usage of AutoBindable
 class MyAutoBindableClass extends AutoBindable {
@@ -87,6 +148,3 @@ class MyAutoBindableClass extends AutoBindable {
 
 ## Bindings diagram
 ![Bindings diagram](img/diagram.png)
-
-## Bindable Collections diagram
-![Bindings diagram](img/diagram_collection.png)
