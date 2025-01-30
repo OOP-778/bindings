@@ -34,7 +34,7 @@ class AutoBindableHelper {
         final Set<String> visitedMethods = new HashSet<>();
 
         Class<?> currentClass = clazz;
-        while (currentClass != null) {
+        while (currentClass != Object.class && currentClass != null) {
             result.addAll(AutoBindableHelper.collectMethods(currentClass, visitedMethods));
             if (hierarchy) {
                 for (final Class<?> anInterface : currentClass.getInterfaces()) {
@@ -60,15 +60,15 @@ class AutoBindableHelper {
         final List<MethodHandle> result = new ArrayList<>();
 
         for (final Method declaredMethod : declaredMethods) {
-            declaredMethod.setAccessible(true);
-            if (!visitedMethods.add(declaredMethod.getName())) {
-                continue;
-            }
-
             final int modifiers = declaredMethod.getModifiers();
 
             // Neither static nor abstract
             if (Modifier.isAbstract(modifiers) || Modifier.isStatic(modifiers)) {
+                continue;
+            }
+
+            declaredMethod.setAccessible(true);
+            if (!visitedMethods.add(declaredMethod.getName())) {
                 continue;
             }
 
