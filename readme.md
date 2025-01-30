@@ -16,6 +16,24 @@
 
 This library gives you the flexibility for managing lifecycle of your objects, you're able to bind objects to another objects, control the order of closing, if there's memory leaks you can find the source of them very quickly using built in dumping tool, which produces a graph of all unclosed bindable instances.
 
+## Getting Started
+
+Bindings are hosted on Maven Central to use it add the following dependency to your project:
+
+### Maven
+```xml
+<dependency>
+    <groupId>dev.oop778</groupId>
+    <artifactId>bindings</artifactId>
+    <version>VERSION</version>
+</dependency>
+```
+
+### Gradle
+```gradle
+implementation 'dev.oop778:bindings:VERSION'
+```
+
 ## See in action
 You can pull the project, and run the `src/test/oop778/binding/test/TestLive.java` after successful run you should see `dump.html` in the 
 project directory. You can open it in any browser.
