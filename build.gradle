@@ -1,10 +1,12 @@
 import dev.oop778.gradle.common.CommonPlugin
+import dev.oop778.gradle.common.HierarchyProjectName
+import dev.oop778.gradle.common.enums.MavenCentralReleaseManagement
 
 plugins {
     id 'java-library'
     id "com.ryandens.javaagent-test" version "0.4.2"
     id "io.github.reyerizo.gradle.jcstress" version "0.8.15"
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '8.3.0'
     id "me.champeau.jmh" version "0.7.1"
     id 'signing'
     id 'maven-publish'
@@ -18,10 +20,6 @@ repositories {
 
 test {
     useJUnitPlatform()
-}
-
-jcstress {
-    verbose = "true"
 }
 
 jmh {
@@ -52,20 +50,14 @@ dependencies {
     api("com.google.code.findbugs:jsr305:3.0.2")
 }
 
-//tasks.withType(JavaForkOptions).configureEach {
-//    jvmArgs += [
-//            '--add-opens', 'java.base/java.util=ALL-UNNAMED',
-//            '--add-opens', 'java.base/java.util.concurrent.atomic=ALL-UNNAMED',
-//            '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-//            '--add-opens', 'java.base/java.util.concurrent=ALL-UNNAMED',
-//    ]
-//}
+deployer {
+    if (System.getenv("CI") != null) {
+        if (System.getenv("SIGN_KEY") != null) {
+            setupSigning(System.getenv("SIGN_KEY"), System.getenv("SIGN_PASSWORD"))
+        }
 
-shadowJar {
-    relocate("dev.oop778.bindings", "com.emerald.system.binding")
-}
-
-common {
-    createPublicationFrom(components.java, project.name)
+        def publication = createPublicationFrom(components.java, HierarchyProjectName.get(project), "dev.oop778", System.getenv("VERSION"))
+        publishToMavenCentral(publication, System.getenv("MAVEN_USERNAME"), System.getenv("MAVEN_PASSWORD"), MavenCentralReleaseManagement.USER_MANAGED)
+    }
 }
 
