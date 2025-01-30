@@ -12,6 +12,7 @@
 - The new version has introduced ability to listen for tree changes: node creation, node close & dump, so you can add your own metrics to dump files to help you detect issues faster by default it comes with BindingsStackTracker & BindingsTimeStamp
 - Added bindableDisplay() method in Bindable to allow you to customize how you display your bindable instances in dump
 - Move to java 17
+- Add statefulBindTo method which returns true if binded, else if not (means the bindable you're trying to bind to has closed)
 
 This library gives you the flexibility for managing lifecycle of your objects, you're able to bind objects to another objects, control the order of closing, if there's memory leaks you can find the source of them very quickly using built in dumping tool, which produces a graph of all unclosed bindable instances.
 
