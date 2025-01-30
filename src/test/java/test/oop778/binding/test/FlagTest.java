@@ -11,9 +11,9 @@ class FlagTest {
 
     @Test
     void testWhenEmptyClose() {
-        final Bindable parent = Bindable.create();
-        final Bindable child = Bindable.create();
-        final Bindable child2 = Bindable.create();
+        final Bindable parent = new ParentBindable();
+        final Bindable child = new ChildBindable();
+        final Bindable child2 = new ChildBindable();
 
         child.bindTo(parent);
         child2.bindTo(parent);
@@ -41,4 +41,8 @@ class FlagTest {
         child.close();
         assertTrue(parent.isClosed(), "Parent must be closed");
     }
+
+    public static class ParentBindable implements Bindable {}
+
+    public static class ChildBindable implements Bindable {}
 }
